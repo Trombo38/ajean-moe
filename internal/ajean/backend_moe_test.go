@@ -3,6 +3,7 @@ package ajean
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -148,10 +149,24 @@ func TestMoeBuildConfigMmap(t *testing.T) {
 	}
 }
 
+// TestMoeLauncherArgs : les args du lanceur ne doivent pas contenir le
+// programme (serveMoe le pose en tête, comme pour llama-server — sinon il est
+// deux fois sur la ligne de commande et server.py reçoit un flag inattendu).
+// Sous Linux le lanceur est écrit dans moeHome/ : le dossier doit exister
+// (t.Setenv ne le crée pas). Sous Windows il n'y a rien à écrire, le python
+// doit seulement exister. Ailleurs il n'y a pas de moteur : pas de test.
 func TestMoeLauncherArgs(t *testing.T) {
+	switch runtime.GOOS {
+	case "linux", "windows":
+	default:
+		t.Skipf("pas de moteur MoE sous %s : rien à lancer", runtime.GOOS)
+	}
 	t.Setenv("AJEAN_HOME", t.TempDir())
+	if err := os.MkdirAll(moeHome(), 0o755); err != nil {
+		t.Fatal(err)
+	}
 	srcDir := t.TempDir()
-	py := filepath.Join(srcDir, ".venv", "bin", "python")
+	py := moeVenvPython(srcDir)
 	_ = os.MkdirAll(filepath.Dir(py), 0o755)
 	_ = os.WriteFile(py, []byte("x"), 0o755)
 	prog, largs, err := moeWriteLauncher(srcDir, py)

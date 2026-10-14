@@ -48,8 +48,6 @@ const (
 	moeReleaseBase = "https://github.com/nathaninline/ajean/releases/download/moe-v" + moeVersion + "/"
 	moeSrcAsset    = "ajean-moe-src-" + moeVersion + ".tar.gz"
 	moeEngineAsset = "ajean-moe-engine-" + moeVersion + "-linux-x64-cuda12.zip"
-	// moeEngineLocal : le nom sous lequel l'installeur attend le moteur (CUDA12_ASSET).
-	moeEngineLocal = "strata-linux-x64-cuda12.zip"
 )
 
 // moeEngineAssetName : le paquet de moteur attendu sur cette plateforme. Sous
