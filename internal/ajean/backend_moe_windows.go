@@ -431,6 +431,27 @@ func moeAlias(target, name string) string {
 	return dst
 }
 
+// copyFile : copie binaire src -> dst. Sous Windows, moeAlias ne sait mettre un
+// binaire en avant que par une copie (pas de lien symbolique sans privileges) :
+// ce helper n'existe que pour ce chemin, d'ou sa place ici et non dans le code
+// partage, ou il serait mort a la compilation Linux (staticcheck U1000).
+func copyFile(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(out, in); err != nil {
+		out.Close()
+		return err
+	}
+	return out.Close()
+}
+
 var reNvccMajor = regexp.MustCompile(`release (\d+)\.\d+`)
 
 // moeNvccMajor : la version majeure du nvcc d'un dossier toolkit (12 ou 13).

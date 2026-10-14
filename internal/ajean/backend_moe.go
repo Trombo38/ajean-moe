@@ -731,23 +731,6 @@ func moeFindConfig(quant string) (string, error) {
 	return "", fmt.Errorf("l'installeur n'a pas laissé de configuration pour %s dans %s", quant, moeSrcDir())
 }
 
-func copyFile(src, dst string) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer in.Close()
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	if _, err := io.Copy(out, in); err != nil {
-		out.Close()
-		return err
-	}
-	return out.Close()
-}
-
 // ---------------------------------------------------------------------------
 // Lancement (ajean serve)
 // ---------------------------------------------------------------------------
